@@ -7,18 +7,75 @@ use Illuminate\Http\Request;
 
     class LivroController extends Controller
 {
-       public function store(Request $request){
-        $livro = Livro::create([
-            'titulo' => $request->titulo,
-            'ano_publicacao' =>$request->ano_publicacao,
-            'genero' =>$request->genero
-        ]);
-         return response()->json($livro);
-    } 
+       public function index() {
+        $livros = Livro::all();
 
-    public function index(){
-        $livro = Livro ::all();
+        return response()->json($livros);
+    }
+
+    public function store(Request $request){
+        $livro =Livro::create([
+            'titulo' => $request->titulo,
+            'ano_publicacao' => $request->ano_publicacao,
+            'genero' => $request->genero
+        ]);
 
         return response()->json($livro);
-}
+    }
+    
+    public function update(Request $request){
+        $livro = Livro::find($request->id);
+
+        if($livro == null) {
+            return response()->json([
+                'erro' => 'Livro não encontrado'
+            ]);
+        }
+
+        if(isset($request->titulo)){
+          $livro ->titulo=$request->titulo;  
+        }
+
+         if(isset($request->ano_publicacao)){
+          $livro ->ano_publicacao=$request->ano_publicacao;
+        }
+
+        if(isset($request->genero)){
+         $livro ->genero=$request->genero;
+        }
+
+        $livro->update();
+
+        return response()->json([
+            'mensagem' => 'atualizada'
+        ]);
+    }
+
+    public function show($id){
+        $livro = Livro::find($id);
+
+        if($livro == null){
+            return response()->json([
+                'erro' => 'Livro não encontrado'
+            ]);
+        }
+
+        return response()->json($livro);
+    }
+
+    public function delete($id){
+        $livro = Livro::find($id);
+
+        if($livro == null) {
+            return response()->json([
+                'erro' => 'Livro não encontrado'
+            ]);
+        }
+
+        $livro->delete();
+
+        return response()->json([
+            'mensagem' => 'excluído'
+        ]);
+    }
 }
